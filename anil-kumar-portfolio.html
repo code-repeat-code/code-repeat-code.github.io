@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Anil Kumar — Backend engineer, .NET & Kafka</title>
+<meta name="description" content="Anil Kumar is a Software Engineer 3 at Advisor360 building .NET microservices, Kafka pipelines and workflow orchestration for high-volume financial data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF2EE; --bg2:#E3E9E4; --ink:#0F231F; --ink2:#3E5550; --mute:#6E837D;
+  --line:#C9D4CE; --accent:#B9701C; --accent-ink:#8A5010; --card:#F6F8F6;
+  --flow:#B9701C;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1917; --bg2:#12211E; --ink:#E8EEEA; --ink2:#B8C6C0; --mute:#7F948D;
+    --line:#233530; --accent:#D99A46; --accent-ink:#E8B46A; --card:#132320; --flow:#E0A24E;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1917; --bg2:#12211E; --ink:#E8EEEA; --ink2:#B8C6C0; --mute:#7F948D;
+  --line:#233530; --accent:#D99A46; --accent-ink:#E8B46A; --card:#132320; --flow:#E0A24E;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size:17px; line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.serif{font-family:Fraunces, "Iowan Old Style", Georgia, serif; font-weight:400; letter-spacing:-0.01em; margin:0}
+a{color:inherit; text-decoration:none}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:2px}
+img{max-width:100%}
+p{margin:0}
+
+/* Frame */
+.frame{display:grid; grid-template-columns:200px minmax(0,1fr); max-width:1240px; margin:0 auto; padding:0 32px; gap:56px}
+.rail{position:sticky; top:env(safe-area-inset-top,0px); align-self:start; height:100vh; height:100dvh; padding:40px 0; display:flex; flex-direction:column; justify-content:space-between}
+.rail .name{font-family:Fraunces,serif; font-size:22px; line-height:1.1}
+.rail .name small{display:block; font-family:"IBM Plex Sans",sans-serif; font-size:13px; color:var(--mute); margin-top:6px}
+.rail nav{display:flex; flex-direction:column; gap:10px; margin-top:64px}
+.rail nav a{font-size:14px; color:var(--mute); padding-left:14px; position:relative; transition:color .2s}
+.rail nav a::before{content:""; position:absolute; left:0; top:50%; width:6px; height:1px; background:var(--line); transform:translateY(-50%); transition:width .2s, background .2s}
+.rail nav a.active, .rail nav a:hover{color:var(--ink)}
+.rail nav a.active::before{width:9px; background:var(--accent)}
+.rail .status{font-size:13px; color:var(--mute); line-height:1.5}
+.rail .status b{display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--accent); margin-right:8px; vertical-align:1px}
+.main{min-width:0; padding:40px 0 120px}
+
+/* Hero */
+.hero{min-height:calc(100vh - 80px); min-height:calc(100dvh - 80px); display:flex; flex-direction:column; justify-content:space-between; padding-bottom:16px}
+.hero h1{font-size:clamp(36px,5vw,64px); line-height:1.1; font-weight:500; letter-spacing:-0.015em; max-width:18ch}
+.hero .lede{max-width:52ch; color:var(--ink2); font-size:18px; margin-top:28px}
+.hero .cta{display:flex; gap:12px; margin-top:32px; flex-wrap:wrap}
+.btn{display:inline-flex; align-items:center; gap:8px; padding:12px 18px; border-radius:999px; font-size:15px; font-weight:500; border:1px solid var(--ink); transition:background .2s,color .2s}
+.btn.primary{background:var(--ink); color:var(--bg)}
+.btn.primary:hover{background:var(--accent); border-color:var(--accent); color:#fff}
+.btn.ghost:hover{background:var(--bg2)}
+
+/* Orchestration diagram */
+.flow{margin-top:48px; border-top:1px solid var(--line); padding-top:20px}
+.flow figcaption{font-size:13px; color:var(--mute); margin-bottom:8px; display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap}
+.flow svg{width:100%; height:auto; display:block; overflow:visible}
+.flow .node{fill:var(--card); stroke:var(--line)}
+.flow .node.hot{stroke:var(--ink)}
+.flow text{font-family:"IBM Plex Sans",sans-serif; font-size:12px; fill:var(--ink2)}
+.flow .lbl{fill:var(--ink); font-weight:500}
+.flow .wire{stroke:var(--line); fill:none; stroke-width:1.2}
+.flow .dot{fill:var(--flow)}
+.flow .schedule{stroke:var(--line); stroke-dasharray:3 4}
+
+/* Sections */
+section{padding-top:96px}
+.sec-head{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,2fr); gap:32px; align-items:end; margin-bottom:40px}
+.sec-head h2{font-size:clamp(30px,3.4vw,44px); line-height:1.1; font-weight:500}
+.sec-head p{color:var(--ink2); max-width:56ch}
+
+/* About */
+.about{display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); gap:48px}
+.about .body{font-size:19px; line-height:1.65; color:var(--ink); max-width:60ch}
+.about .body + .body{margin-top:20px}
+.facts{border-left:1px solid var(--line); padding-left:24px; display:flex; flex-direction:column; gap:20px; align-self:start}
+.facts dt{font-size:13px; color:var(--mute)}
+.facts dd{margin:2px 0 0; font-size:16px}
+
+/* Work */
+.work{display:flex; flex-direction:column}
+.case{display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:40px; padding:40px 0; border-top:1px solid var(--line)}
+.case:last-child{border-bottom:1px solid var(--line)}
+.case h3{font-size:clamp(24px,2.6vw,32px); line-height:1.15; font-weight:400; max-width:24ch}
+.case .ctx{font-size:14px; color:var(--mute); margin-bottom:12px}
+.case .desc{color:var(--ink2); margin-top:16px; max-width:56ch}
+.case .stack{display:flex; flex-wrap:wrap; gap:8px; margin-top:20px}
+.tag{font-size:13px; padding:5px 10px; border:1px solid var(--line); border-radius:999px; color:var(--ink2); background:var(--card)}
+.outcome{align-self:center; display:flex; flex-direction:column; gap:14px}
+.outcome .fig{font-family:Fraunces,serif; font-weight:500; font-size:clamp(40px,5vw,64px); line-height:1; letter-spacing:-0.02em}
+.outcome .fig em{font-style:italic; color:var(--accent-ink)}
+.outcome .cap{font-size:15px; color:var(--ink2); max-width:32ch}
+.delta{display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:14px}
+.delta .bar{height:6px; background:var(--line); border-radius:3px; position:relative; overflow:hidden}
+.delta .bar i{position:absolute; inset:0 auto 0 0; background:var(--accent); border-radius:3px; width:var(--w)}
+.delta .v{font-family:Fraunces,serif; font-size:22px; min-width:5ch}
+.delta .v.s{color:var(--mute); text-decoration:line-through; text-decoration-color:var(--accent)}
+
+/* Experience timeline */
+.timeline{position:relative; display:flex; flex-direction:column; gap:0}
+.role{display:grid; grid-template-columns:160px 24px minmax(0,1fr); gap:20px; padding:28px 0; position:relative}
+.role .when{font-size:14px; color:var(--mute); padding-top:4px}
+.role .mark{position:relative}
+.role .mark::before{content:""; position:absolute; left:11px; top:0; bottom:0; width:1px; background:var(--line)}
+.role .mark::after{content:""; position:absolute; left:8px; top:10px; width:7px; height:7px; border-radius:50%; background:var(--bg); border:1px solid var(--ink)}
+.role.current .mark::after{background:var(--accent); border-color:var(--accent)}
+.role:first-child .mark::before{top:10px}
+.role:last-child .mark::before{bottom:auto; height:10px}
+.role h3{font-size:22px; font-weight:400}
+.role .org{color:var(--mute); font-size:15px; margin-top:2px}
+.role ul{margin:14px 0 0; padding-left:0; list-style:none; color:var(--ink2); display:flex; flex-direction:column; gap:8px; max-width:62ch}
+.role li{padding-left:18px; position:relative}
+.role li::before{content:""; position:absolute; left:0; top:.75em; width:8px; height:1px; background:var(--accent)}
+
+/* Skills */
+.skills{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:32px 40px}
+.skill h3{font-size:17px; font-family:"IBM Plex Sans",sans-serif; font-weight:600; margin-bottom:10px}
+.skill p{color:var(--ink2); font-size:15.5px; line-height:1.7}
+.skill .lead{color:var(--ink); font-weight:500}
+
+/* Projects */
+.projects{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px}
+.proj{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:28px; display:flex; flex-direction:column; gap:14px; transition:border-color .2s}
+.proj:hover{border-color:var(--ink2)}
+.proj h3{font-size:22px; font-weight:400}
+.proj .stack{font-size:14px; color:var(--mute)}
+.proj ul{margin:0; padding-left:18px; color:var(--ink2); font-size:15.5px; display:flex; flex-direction:column; gap:6px}
+.proj a{margin-top:auto; font-size:14px; font-weight:500; color:var(--accent-ink); align-self:flex-start; border-bottom:1px solid transparent; transition:border-color .2s}
+.proj a:hover{border-color:var(--accent-ink)}
+
+/* Education */
+.edu{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:40px}
+.edu .list{display:flex; flex-direction:column; gap:20px}
+.edu .item h3{font-size:18px; font-family:"IBM Plex Sans",sans-serif; font-weight:600}
+.edu .item p{color:var(--ink2); font-size:15.5px}
+.edu .item .m{color:var(--mute); font-size:14px}
+
+/* Contact */
+.contact{border-top:1px solid var(--line); margin-top:120px; padding-top:64px}
+.contact h2{font-size:clamp(32px,4.4vw,56px); font-weight:500; line-height:1.02; max-width:16ch}
+.contact .links{display:flex; flex-wrap:wrap; gap:12px 28px; margin-top:32px}
+.contact .links a{font-size:17px; border-bottom:1px solid var(--line); padding-bottom:2px; transition:border-color .2s}
+.contact .links a:hover{border-color:var(--accent)}
+footer{margin-top:64px; font-size:13px; color:var(--mute); display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap}
+
+/* Responsive */
+@media (max-width:980px){
+  .frame{grid-template-columns:1fr; gap:0; padding:0 24px}
+  .rail{position:sticky; height:auto; flex-direction:row; align-items:center; padding:14px 0; background:var(--bg); z-index:10; border-bottom:1px solid var(--line); justify-content:space-between}
+  .rail nav{flex-direction:row; margin:0; gap:16px; overflow-x:auto; scrollbar-width:none}
+  .rail nav::-webkit-scrollbar{display:none}
+  .rail nav a{padding-left:0; white-space:nowrap}
+  .rail nav a::before{display:none}
+  .rail .status, .rail .name small{display:none}
+  .main{padding-top:40px}
+  .hero{min-height:auto}
+  .sec-head,.about,.case,.edu{grid-template-columns:1fr; gap:24px}
+  .skills{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .role{grid-template-columns:24px minmax(0,1fr); gap:16px}
+  .role .when{grid-column:2; order:0; padding-top:0}
+  .role .mark{grid-column:1; grid-row:1 / span 2}
+  .role .content{grid-column:2}
+  .facts{border-left:0; padding-left:0; border-top:1px solid var(--line); padding-top:20px}
+}
+@media (max-width:600px){
+  body{font-size:16px}
+  .frame{padding:0 18px}
+  .skills,.projects{grid-template-columns:1fr}
+  section{padding-top:72px}
+  .rail .name{font-size:18px}
+  .rail nav a:nth-child(n+5){display:none}
+}
+@media (prefers-reduced-motion:reduce){ .dot{display:none} .static-dot{display:block!important} }
+</style>
+</head>
+<body>
+<div class="frame">
+  <aside class="rail">
+    <div>
+      <a class="name" href="#top">Anil Kumar<small>Backend engineer · Bengaluru, India</small></a>
+      <nav aria-label="Sections">
+        <a href="#about">About</a>
+        <a href="#work">Selected work</a>
+        <a href="#experience">Experience</a>
+        <a href="#skills">Skills</a>
+        <a href="#projects">Projects</a>
+        <a href="#education">Education</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+    <div class="status"><b aria-hidden="true"></b>Software Engineer 3<br>Advisor360, since 2022</div>
+  </aside>
+
+  <main class="main" id="top">
+    <header class="hero">
+      <div>
+        <h1>Systems that move financial data at scale, and don't drop a message.</h1>
+        <p class="lede">I'm a backend engineer with four years in .NET, Kafka and SQL. At Advisor360 I own the architecture of a workflow orchestration platform that runs a long, multi-step business process across microservices that used to be done by hand.</p>
+        <div class="cta">
+          <a class="btn primary" href="#work">See the work</a>
+          <a class="btn ghost" href="mailto:anilsikarwar123@gmail.com">Email me</a>
+        </div>
+      </div>
+
+      <figure class="flow" aria-label="Diagram of the workflow orchestration platform: events and scheduled jobs enter Kafka, are coordinated by an Orkes orchestrator, and fan out to microservices.">
+        <figcaption><span>How the platform I own is shaped</span><span>Orkes (Conductor) · Kafka · scheduled jobs · .NET microservices</span></figcaption>
+        <svg viewBox="0 0 960 190" xmlns="http://www.w3.org/2000/svg" role="img">
+          <defs>
+            <path id="p1" d="M118 60 C 200 60, 220 95, 300 95"/>
+            <path id="p2" d="M118 130 C 200 130, 220 95, 300 95"/>
+            <path id="p3" d="M380 95 H 500"/>
+            <path id="p4" d="M660 95 C 720 95, 740 40, 800 40"/>
+            <path id="p5" d="M660 95 H 800"/>
+            <path id="p6" d="M660 95 C 720 95, 740 150, 800 150"/>
+          </defs>
+          <!-- wires -->
+          <use href="#p1" class="wire"/><use href="#p2" class="wire schedule"/><use href="#p3" class="wire"/>
+          <use href="#p4" class="wire"/><use href="#p5" class="wire"/><use href="#p6" class="wire"/>
+
+          <!-- sources -->
+          <rect class="node" x="8" y="38" width="110" height="44" rx="8"/>
+          <text x="63" y="56" text-anchor="middle" class="lbl">Events</text>
+          <text x="63" y="72" text-anchor="middle">upstream services</text>
+          <rect class="node" x="8" y="108" width="110" height="44" rx="8"/>
+          <text x="63" y="126" text-anchor="middle" class="lbl">Scheduled jobs</text>
+          <text x="63" y="142" text-anchor="middle">time-based triggers</text>
+
+          <!-- kafka -->
+          <rect class="node hot" x="300" y="73" width="80" height="44" rx="8"/>
+          <text x="340" y="99" text-anchor="middle" class="lbl">Kafka</text>
+
+          <!-- orchestrator -->
+          <rect class="node hot" x="500" y="60" width="160" height="70" rx="10"/>
+          <text x="580" y="90" text-anchor="middle" class="lbl">Orkes orchestrator</text>
+          <text x="580" y="108" text-anchor="middle">retries · state · sequencing</text>
+
+          <!-- services -->
+          <rect class="node" x="800" y="18" width="150" height="44" rx="8"/>
+          <text x="875" y="45" text-anchor="middle" class="lbl">Matching service</text>
+          <rect class="node" x="800" y="73" width="150" height="44" rx="8"/>
+          <text x="875" y="100" text-anchor="middle" class="lbl">Reporting service</text>
+          <rect class="node" x="800" y="128" width="150" height="44" rx="8"/>
+          <text x="875" y="155" text-anchor="middle" class="lbl">Access &amp; auth</text>
+
+          <!-- flowing messages -->
+          <g class="dots" aria-hidden="true">
+            <circle class="dot" r="3.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0s"><mpath href="#p1"/></animateMotion></circle>
+            <circle class="dot" r="3.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="1.3s"><mpath href="#p1"/></animateMotion></circle>
+            <circle class="dot" r="3.5"><animateMotion dur="3.2s" repeatCount="indefinite" begin="0.6s"><mpath href="#p2"/></animateMotion></circle>
+            <circle class="dot" r="3.5"><animateMotion dur="1.6s" repeatCount="indefinite" begin="0.4s"><mpath href="#p3"/></animateMotion></circle>
+            <circle class="dot" r="3.5"><animateMotion dur="1.6s" repeatCount="indefinite" begin="1.2s"><mpath href="#p3"/></animateMotion></circle>
+            <circle class="dot" r="3.5"><animateMotion dur="2.4s" repeatCount="indefinite" begin="0.2s"><mpath href="#p4"/></animateMotion></circle>
+            <circle class="dot" r="3.5"><animateMotion dur="2.2s" repeatCount="indefinite" begin="1.1s"><mpath href="#p5"/></animateMotion></circle>
+            <circle class="dot" r="3.5"><animateMotion dur="2.5s" repeatCount="indefinite" begin="1.8s"><mpath href="#p6"/></animateMotion></circle>
+            <circle class="dot static-dot" style="display:none" cx="440" cy="95" r="3.5"/>
+          </g>
+        </svg>
+      </figure>
+    </header>
+
+    <section id="about">
+      <div class="sec-head">
+        <h2>About</h2>
+        <p>Most of my work sits between a message arriving and a correct record landing somewhere a person can trust it.</p>
+      </div>
+      <div class="about">
+        <div>
+          <p class="body">I joined Advisor360 in 2022 as a Software Engineer 1, fixing production issues for an application with more than 20,000 users and redesigning the stored procedures behind financial record matching. Over the next three years the problems grew: Kafka microservices sustaining over a million messages a second, a reporting job that took nineteen minutes and needed to take seconds, and a codebase that had to become easier to extend without breaking.</p>
+          <p class="body">Since December 2025 I've been a Software Engineer 3, owning the design of the orchestration platform above and setting technical direction through design reviews and mentoring — service boundaries, error handling, and testing standards. I care about the unglamorous parts: idempotency, test coverage in the pipeline, and the query plan nobody looked at.</p>
+        </div>
+        <dl class="facts">
+          <div><dt>Based in</dt><dd>Bengaluru, India (from Hathras, Uttar Pradesh)</dd></div>
+          <div><dt>Currently</dt><dd>Software Engineer 3, Advisor360</dd></div>
+          <div><dt>Core stack</dt><dd>C#, .NET Core, Kafka, SQL Server, Orkes/Conductor, Docker, Kubernetes</dd></div>
+          <div><dt>Education</dt><dd>MCA, Chandigarh University · BCA, GLA University</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section id="work">
+      <div class="sec-head">
+        <h2>Selected work</h2>
+        <p>Four problems from Advisor360, each with what changed as a result. All figures are from production systems.</p>
+      </div>
+      <div class="work">
+        <article class="case">
+          <div>
+            <p class="ctx">2025 – present · Software Engineer 3</p>
+            <h3>A workflow orchestration platform for a process that used to run by hand</h3>
+            <p class="desc">A long, multi-step business process had been coordinated manually across several microservices. I own the architecture of the platform that now runs it: Orkes (Conductor) for sequencing and state, Kafka for events, and scheduled jobs for the time-driven steps. Alongside the build, I set the team's standards for service boundaries, error handling and testing through design reviews and mentoring.</p>
+            <div class="stack"><span class="tag">Orkes / Conductor</span><span class="tag">Kafka</span><span class="tag">.NET Core</span><span class="tag">Scheduled jobs</span><span class="tag">Design reviews</span></div>
+          </div>
+          <div class="outcome">
+            <p class="fig">Manual <em>→</em> orchestrated</p>
+            <p class="cap">One multi-step process, coordinated end to end across services with retries and state instead of people and checklists.</p>
+          </div>
+        </article>
+
+        <article class="case">
+          <div>
+            <p class="ctx">2023 – 2025 · Software Engineer 2</p>
+            <h3>Kafka microservices at over a million messages a second</h3>
+            <p class="desc">Built .NET Core and Kafka microservices that sustain more than 1,000,000 messages per second in production, and implemented OAuth authentication with role-based access control across the services. Led the refactoring of core modules to reduce coupling and make the codebase easier to extend.</p>
+            <div class="stack"><span class="tag">.NET Core</span><span class="tag">Kafka</span><span class="tag">OAuth</span><span class="tag">RBAC</span><span class="tag">Docker · Kubernetes</span></div>
+          </div>
+          <div class="outcome">
+            <p class="fig">1M<em>+</em> msg/s</p>
+            <p class="cap">Sustained production throughput, with authentication and access control applied consistently across services.</p>
+          </div>
+        </article>
+
+        <article class="case">
+          <div>
+            <p class="ctx">2023 – 2025 · Software Engineer 2</p>
+            <h3>The reporting path, from nineteen minutes to under thirty seconds</h3>
+            <p class="desc">The slowest stored procedures in the reporting path were rewritten from the query plan up. The worst job went from 19 minutes to under 30 seconds. In the same period I built out unit and integration coverage in the CI/CD pipeline so regressions in this path get caught before release rather than after.</p>
+            <div class="stack"><span class="tag">SQL Server</span><span class="tag">Stored procedures</span><span class="tag">xUnit / NUnit</span><span class="tag">GitHub Actions</span></div>
+          </div>
+          <div class="outcome">
+            <div class="delta"><span class="v s">19 min</span><span class="bar" aria-hidden="true"><i style="--w:100%"></i></span><span></span></div>
+            <div class="delta"><span class="v">&lt; 30 s</span><span class="bar" aria-hidden="true"><i style="--w:2.6%"></i></span><span></span></div>
+            <p class="cap">Roughly a 38× reduction in run time for the slowest reporting job.</p>
+          </div>
+        </article>
+
+        <article class="case">
+          <div>
+            <p class="ctx">2022 – 2023 · Software Engineer 1</p>
+            <h3>Faster financial record matching and steadier data pipelines</h3>
+            <p class="desc">Redesigned the stored procedures behind financial record matching, cutting matching time by 40%. Built SSRS reports and rebuilt SSIS packages to keep large data pipelines running reliably, and diagnosed and fixed production issues for an application serving more than 20,000 users.</p>
+            <div class="stack"><span class="tag">SQL</span><span class="tag">SSIS</span><span class="tag">SSRS</span><span class="tag">Production support</span></div>
+          </div>
+          <div class="outcome">
+            <p class="fig">40<em>%</em> faster</p>
+            <p class="cap">Financial record matching, for an application with 20,000+ users.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="experience">
+      <div class="sec-head">
+        <h2>Experience</h2>
+        <p>Four years, three levels, one company for most of it — plus a short first role that taught me how much a good scheduler matters.</p>
+      </div>
+      <div class="timeline">
+        <div class="role current">
+          <div class="when">Dec 2025 – present</div>
+          <div class="mark" aria-hidden="true"></div>
+          <div class="content">
+            <h3>Software Engineer 3</h3>
+            <p class="org">Advisor360 · Bengaluru, India</p>
+            <ul>
+              <li>Own the architecture of a workflow orchestration platform built on Orkes (Conductor), Kafka and scheduled jobs, coordinating a long multi-step business process across several microservices that previously ran manually.</li>
+              <li>Set technical direction through design reviews and mentoring, aligning the team on service boundaries, error handling and testing standards.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="role">
+          <div class="when">Jul 2023 – Nov 2025</div>
+          <div class="mark" aria-hidden="true"></div>
+          <div class="content">
+            <h3>Software Engineer 2</h3>
+            <p class="org">Advisor360 · Bengaluru, India</p>
+            <ul>
+              <li>Built .NET Core and Kafka microservices sustaining over 1 million messages per second in production.</li>
+              <li>Rewrote the slowest stored procedures in the reporting path, taking one job from 19 minutes to under 30 seconds.</li>
+              <li>Built out unit and integration test coverage in the CI/CD pipeline, catching regressions before release.</li>
+              <li>Led refactoring of core modules to reduce coupling and make the codebase easier to extend.</li>
+              <li>Implemented OAuth authentication and role-based access control across services.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="role">
+          <div class="when">Aug 2022 – Jul 2023</div>
+          <div class="mark" aria-hidden="true"></div>
+          <div class="content">
+            <h3>Software Engineer 1</h3>
+            <p class="org">Advisor360 · Bengaluru, India</p>
+            <ul>
+              <li>Cut financial record matching time by 40% by redesigning the stored procedures behind it.</li>
+              <li>Built SSRS reports and rebuilt SSIS packages to keep large data pipelines running reliably.</li>
+              <li>Diagnosed and fixed production issues for an application serving 20,000+ users.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="role">
+          <div class="when">Jun 2022 – Aug 2022</div>
+          <div class="mark" aria-hidden="true"></div>
+          <div class="content">
+            <h3>Software Engineer 1</h3>
+            <p class="org">Rucira · Bengaluru, India</p>
+            <ul>
+              <li>Built a centralized Quartz.NET scheduler running 200+ daily jobs, improving reporting accuracy by 30%.</li>
+              <li>Modernized legacy VB.NET and MVC applications, improving performance and cutting code complexity by 40%.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills">
+      <div class="sec-head">
+        <h2>Skills</h2>
+        <p>Grouped by the job they do. The first line in each group is what I reach for most.</p>
+      </div>
+      <div class="skills">
+        <div class="skill"><h3>Languages</h3><p><span class="lead">C#, SQL</span><br>C++, Java, Python, VB.NET, Apex, SOQL, HTML</p></div>
+        <div class="skill"><h3>Backend &amp; APIs</h3><p><span class="lead">.NET Core, ASP.NET Web API, RESTful APIs</span><br>Entity Framework Core, LINQ, MVC, OAuth, OOP</p></div>
+        <div class="skill"><h3>Messaging &amp; orchestration</h3><p><span class="lead">Kafka, Orkes / Conductor</span><br>Quartz.NET scheduling, event-driven microservices</p></div>
+        <div class="skill"><h3>Data &amp; reporting</h3><p><span class="lead">SQL Server stored procedures</span><br>SSIS, SSRS, PostgreSQL, query optimization</p></div>
+        <div class="skill"><h3>Delivery &amp; infrastructure</h3><p><span class="lead">CI/CD with GitHub Actions and Jenkins</span><br>Docker, Kubernetes, Azure, ELK, Git, TFS</p></div>
+        <div class="skill"><h3>Quality &amp; tooling</h3><p><span class="lead">TDD, xUnit / NUnit</span><br>Swagger, Rider, VS Code, Claude, Augment, GitHub Copilot, Salesforce</p></div>
+      </div>
+    </section>
+
+    <section id="projects">
+      <div class="sec-head">
+        <h2>Personal projects</h2>
+        <p>Smaller things built on my own time to try ideas end to end.</p>
+      </div>
+      <div class="projects">
+        <article class="proj">
+          <h3>WorkoutTracker</h3>
+          <p class="stack">.NET 8 · PostgreSQL · JWT · Docker · GitHub Actions</p>
+          <ul>
+            <li>A REST API for planning and tracking workouts, secured with JWT authentication.</li>
+            <li>10+ endpoints over PostgreSQL covering workouts, history and reporting.</li>
+            <li>Containerized with Docker; deployment automated through GitHub Actions.</li>
+          </ul>
+          <a href="https://github.com" target="_blank" rel="noopener">View on GitHub</a>
+        </article>
+        <article class="proj">
+          <h3>Salesforce custom trigger</h3>
+          <p class="stack">Apex · SOQL</p>
+          <ul>
+            <li>An Apex trigger that keeps a sequential field consistent across insert, update, delete and undelete events for 50,000+ records.</li>
+            <li>SOQL queries optimized to cut execution time by 35%.</li>
+          </ul>
+          <a href="https://github.com" target="_blank" rel="noopener">View on GitHub</a>
+        </article>
+      </div>
+    </section>
+
+    <section id="education">
+      <div class="sec-head">
+        <h2>Education &amp; certifications</h2>
+      </div>
+      <div class="edu">
+        <div class="list">
+          <div class="item"><h3>Master of Computer Applications</h3><p>Chandigarh University, Chandigarh</p><p class="m">Jul 2022 – Jul 2024 · CGPA 8.05</p></div>
+          <div class="item"><h3>Bachelor of Computer Applications</h3><p>GLA University, Mathura</p><p class="m">May 2019 – May 2022 · CGPA 9.24</p></div>
+        </div>
+        <div class="list">
+          <div class="item"><h3>Azure Data Fundamentals</h3><p class="m">Microsoft</p></div>
+          <div class="item"><h3>Building Web APIs with ASP.NET Core in .NET</h3><p class="m">LinkedIn Learning</p></div>
+          <div class="item"><h3>Implement Load Balancing on Compute Engine</h3><p class="m">Skill badge, Google</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="contact">
+      <h2>Working on something that has to stay correct under load? Let's talk.</h2>
+      <div class="links">
+        <a href="mailto:anilsikarwar123@gmail.com">anilsikarwar123@gmail.com</a>
+        <a href="tel:+918923897275">+91 89238 97275</a>
+        <a href="https://linkedin.com/in/anil-kumar-b460b5174" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+      </div>
+      <footer>
+        <span>Anil Kumar · Bengaluru, India</span>
+        <span>Built with plain HTML, CSS and one SVG.</span>
+      </footer>
+    </section>
+  </main>
+</div>
+
+<script>
+(function(){
+  var links=[].slice.call(document.querySelectorAll('.rail nav a'));
+  var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))}).filter(Boolean);
+  if(!('IntersectionObserver' in window))return;
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){
+        links.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id)});
+      }
+    });
+  },{rootMargin:'-40% 0px -55% 0px'});
+  secs.forEach(function(s){io.observe(s)});
+})();
+</script>
+</body>
+</html>
